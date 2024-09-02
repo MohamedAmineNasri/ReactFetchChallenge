@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import Form from "./components/Form";
+import List from "./components/List";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const API_URL = "https://jsonplaceholder.typicode.com/";
+  const [reqType, setReqType] = useState("users");
+  const [items, setItems] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await fetch(`${API_URL}${reqType}`);
+        if (!response.ok) throw Error("Did Not Recive Expected Data");
+        const data = await response.json();
+        setItems(data);
+        console.log(data)
+        setFetchError(null);
+      } catch (error) {
+        console.log(error);
+        setFetchError(error.message);
+      }
+    };
+    fetchItems();
+  }, [reqType]);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <Form reqType={reqType} setReqType={setReqType} />
+      <List items={items} />
+    </div>
+  );
 }
 
-export default App
+export default App;
